@@ -16,6 +16,8 @@ LSTM/src/__pycache__
 LSTM/note/.ipynb_checkpoints
 LSTM/note/.virtual_documents
 LSTM/data
+LSTM/model.h5
+LSTM/model_24.h5
 
 # Editor directories and files
 .idea/*

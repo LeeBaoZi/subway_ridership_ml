@@ -6,6 +6,7 @@ data = './data/MTA_Subway_Hourly_Ridership.csv'
 subway_df = pd.read_csv(data)
 
 subway_df['transit_timestamp'] = pd.to_datetime(subway_df['transit_timestamp'], format="%m/%d/%Y %I:%M:%S %p")
+subway_df['station_complex_id'] = subway_df['station_complex_id'].astype(str)
 
 processed_df = (
     subway_df.groupby(['transit_timestamp', 'transit_mode', 'station_complex_id', 'station_complex', 'borough', 'latitude', 'longitude', 'Georeference'])
