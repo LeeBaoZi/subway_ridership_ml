@@ -10,7 +10,6 @@ def remove_oulier_from_data():
 
   # clean data
   # Remove outliers
-  # subway_df['station_complex_id'] = subway_df['station_complex_id'].astype(str)
   station_ID_list = pd.unique(subway_df["station_complex_id"])
   print(station_ID_list)
   from scipy import stats
@@ -86,15 +85,16 @@ def create_dataset(X, y, time_steps):
   diff = max_datetime - min_datetime
   total_hours = int(((diff.days)*24) + (diff.seconds / 3600))
 
-  # 生成完整的日期范围
+  # Fill the missing date hour
+  # Generate all the datetime range form beginning datetime to the end
   full_time_range = pd.date_range(start=min_datetime, end=max_datetime, freq='h')
-  # 创建一个完整时间范围的 DataFrame
+  # Create a DataFrame who has the full datetime
   X_full = pd.DataFrame({'transit_timestamp': full_time_range})
   y_full = pd.DataFrame({'transit_timestamp': full_time_range})
-  # 合并并补全缺失值
+  # Merge and fill the missing row
   X_full = X_full.merge(X, on='transit_timestamp', how='left')
   y_full = y_full.merge(y, on='transit_timestamp', how='left')
-  # 填充缺失值
+  # Fill missing value to 0
   X_full.fillna(0, inplace=True)
   y_full.fillna(0, inplace=True)
   X = X_full.copy()
@@ -106,8 +106,6 @@ def create_dataset(X, y, time_steps):
   X.to_csv("./data/X.csv", index=False)
   y.to_csv("./data/y.csv", index=False)
 
-  # print(X)
-  # print(total_hours)
   X_temp = X.copy()
   y_temp = y.copy()
   X_temp.drop(columns=['transit_timestamp'], inplace=True)
@@ -127,7 +125,6 @@ def create_dataset(X, y, time_steps):
       
       # Append sequence to ys
       vy = y_temp.iloc[indices_last]
-      # print(indices_last)
       ys.append(vy.values[0])
 
     i += 1
@@ -137,8 +134,6 @@ def create_dataset(X, y, time_steps):
 
 def model_training_all_station():
   subway_df_cleaned = time_feature_enginering()
-  # print(subway_df_cleaned.info())
-  # print(subway_df_cleaned.describe().T)
 
   print('Full dataset:\t', subway_df_cleaned.shape[0])
 
@@ -151,15 +146,15 @@ def model_training_all_station():
   columns_to_scale = [col for col in subway_df_norm.columns if col not in columns_to_exclude]
   scaler = StandardScaler()
   subway_df_norm[columns_to_scale] = scaler.fit_transform(subway_df_norm[columns_to_scale])
-  # print(subway_df_norm)
+  # Save Scaler
+  import joblib
+  joblib.dump(scaler, 'scaler.pkl')
 
   # split Data
   y = subway_df_norm[['ridership', 'transit_timestamp','station_complex_id']]
   X = subway_df_norm.copy()
-  # print(y)
   X, y = create_dataset(X, y, 6)
-  # print(X)
-  # print(y)
+
 
   LSTM_training(X, y)
 
@@ -173,10 +168,6 @@ def LSTM_training (X, y):
     X_train, X_test = X[train_index], X[test_index]
     y_train, y_test = y[train_index], y[test_index]
 
-    # print(X_train)
-    # print(y_train)
-    # break
-
     from tensorflow.keras.models import Sequential
     from tensorflow.keras.layers import LSTM, Dense, Dropout
     # Create LSTM
@@ -184,14 +175,10 @@ def LSTM_training (X, y):
     number_of_stimeseries = X_train.shape[1]
     number_of_features = X_train.shape[2]
     model.add(LSTM(units=900, activation='sigmoid', input_shape=(number_of_stimeseries, number_of_features)))
-    # model.add(LSTM(units=50, return_sequences=True))
-    # model.add(LSTM(units=50, return_sequences=False))
-    # model.add(Dense(units=1))
     # Add dropout layer to penalize more complex models
     model.add(Dropout(rate=0.2))
     # Output layer with 428 neurons as we are predicting 428 stations
     model.add(Dense(428))
-    # model.compile(loss=root_mean_squared_error, optimizer=optimizer)
     # Compile LSTM
     model.compile(optimizer='adam', loss='mean_squared_error')
     # Train Model
