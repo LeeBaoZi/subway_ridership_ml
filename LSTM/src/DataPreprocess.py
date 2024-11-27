@@ -1,5 +1,3 @@
-import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 
 data = './data/MTA_Subway_Hourly_Ridership.csv'

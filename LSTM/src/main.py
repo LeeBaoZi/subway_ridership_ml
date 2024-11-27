@@ -1,10 +1,8 @@
-from DataProcess import process_data  # Import processing function
-from DataAnalysis import analyze_data  # Import analysis function
+from LSTM.src.TraningModel2 import model_training_all_station
 
 
 def main():
-    processed_data = process_data()
-    analyze_data(processed_data)
+    model_training_all_station()
 
 
 if __name__ == "__main__":

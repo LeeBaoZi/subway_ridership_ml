@@ -1,6 +1,9 @@
 from datetime import datetime
 import time
+
 from matplotlib import pyplot as plt
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
 import numpy as np
 import pandas as pd
 
@@ -168,8 +171,6 @@ def LSTM_training (X, y):
     X_train, X_test = X[train_index], X[test_index]
     y_train, y_test = y[train_index], y[test_index]
 
-    from tensorflow.keras.models import Sequential
-    from tensorflow.keras.layers import LSTM, Dense, Dropout
     # Create LSTM
     model = Sequential()
     number_of_stimeseries = X_train.shape[1]
@@ -203,7 +204,7 @@ def LSTM_training (X, y):
     print(f'MAE: {mae}')
     print(f'R²: {r2}')
 
-    # save model and its architecture 
+    # save model and its architecture
     model.save('./ml_model/model.h5')
 
 # remove_oulier_from_data()
