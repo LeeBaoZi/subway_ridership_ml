@@ -34,8 +34,8 @@ def remove_oulier_from_data():
   subway_df_cleaned.to_csv("./data/subway_df_cleaned.csv", index=False)
 
 # time feature enginering
-def time_feature_enginering():
-  subway_df_cleaned = pd.read_csv('./data/subway_df_cleaned.csv', dtype={'station_complex_id': str})
+def time_feature_enginering(rawData):
+  subway_df_cleaned = rawData.copy()
   # subway_df_cleaned = subway_df_cleaned.iloc[:(len(subway_df_cleaned) // 2)]
   timestamp_s = list(subway_df_cleaned.index.map(subway_df_cleaned['transit_timestamp']))
   day_sin_list = []
@@ -136,7 +136,8 @@ def create_dataset(X, y, time_steps):
 
 
 def model_training_all_station():
-  subway_df_cleaned = time_feature_enginering()
+  subway_df_cleaned = pd.read_csv('./data/subway_df_cleaned.csv', dtype={'station_complex_id': str})
+  subway_df_cleaned = time_feature_enginering(subway_df_cleaned)
 
   print('Full dataset:\t', subway_df_cleaned.shape[0])
 
@@ -149,6 +150,7 @@ def model_training_all_station():
   columns_to_scale = [col for col in subway_df_norm.columns if col not in columns_to_exclude]
   scaler = StandardScaler()
   subway_df_norm[columns_to_scale] = scaler.fit_transform(subway_df_norm[columns_to_scale])
+  subway_df_norm.to_csv("./data/subway_df_norm.csv", index=False)
   # Save Scaler
   import joblib
   joblib.dump(scaler, './ml_model/scaler.pkl')
