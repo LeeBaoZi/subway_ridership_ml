@@ -148,7 +148,7 @@ def model_training_all_station():
   subway_df_norm[columns_to_scale] = scaler.fit_transform(subway_df_norm[columns_to_scale])
   # Save Scaler
   import joblib
-  joblib.dump(scaler, 'scaler.pkl')
+  joblib.dump(scaler, './ml_model/scaler.pkl')
 
   # split Data
   y = subway_df_norm[['ridership', 'transit_timestamp','station_complex_id']]
@@ -204,7 +204,7 @@ def LSTM_training (X, y):
     print(f'R²: {r2}')
 
     # save model and its architecture 
-    model.save('model24.h5')
+    model.save('./ml_model/model.h5')
 
 # remove_oulier_from_data()
 model_training_all_station()
