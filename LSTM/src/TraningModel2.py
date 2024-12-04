@@ -209,5 +209,5 @@ def LSTM_training (X, y):
     # save model and its architecture
     model.save('./ml_model/model.h5')
 
-# remove_oulier_from_data()
+remove_oulier_from_data()
 model_training_all_station()
